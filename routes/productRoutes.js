@@ -12,10 +12,11 @@ let Product = require("../models/Product");
 //route Get api/products
 //desc Get all Products
 //access public
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const products = await Product.find({});
     res.send(products);
+    res.json({ msg: "Hello Nayanika" });
   } catch (err) {
     return res.status(500).send("Server error");
   }
@@ -24,7 +25,7 @@ router.get("/", async (req, res) => {
 //route Get api/product/:id
 //desc Get product by id
 //access public
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -61,9 +62,9 @@ router.post(
   [
     check("title", "Title is required").not().isEmpty(),
     check("description", "Description is required").not().isEmpty(),
-    check("price", "Price cannot be empty").not().isEmpty({ min: 1 }),
-    check("price", "Price can be float value").isFloat({ decimal_digits: 2 }),
+    check("price", "Price cannot be 0").notEmpty().isInt({ min: 1 }),
   ],
+  authMiddleware,
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -93,9 +94,9 @@ router.put(
   [
     check("title", "Title is required").not().isEmpty(),
     check("description", "Description is required").not().isEmpty(),
-    check("price", "Price cannot be empty").not().isEmpty({ min: 1 }),
-    check("price", "Price can be float value").isFloat({ decimal_digits: 2 }),
+    check("price", "Price cannot be 0").notEmpty().isInt({ min: 1 }),
   ],
+  authMiddleware,
   async (req, res) => {
     try {
       const errors = validationResult(req);
