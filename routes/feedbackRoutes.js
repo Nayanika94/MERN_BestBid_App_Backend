@@ -26,7 +26,7 @@ router.get("/", authMiddleware, async (req, res) => {
 //route Get api/userFeedback/:id
 //desc Get userFeedback by id
 //access public
-router.get("/:id",authMiddleware, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const userFb = await Todo.findById(req.params.id);
     if (!userFb) {
@@ -49,7 +49,7 @@ router.post(
     check("email", "Email is required").not().notEmpty(),
     check("feedback", "Please provide your review").not().notEmpty(),
   ],
-  
+
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -83,7 +83,7 @@ router.put(
     check("email", "Email is required").not().notEmpty(),
     check("feedback", "Please provide your review").not().notEmpty(),
   ],
- 
+
   async (req, res) => {
     try {
       const errors = validationResult(req);

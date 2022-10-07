@@ -5,24 +5,24 @@ const Schema = mongoose.Schema;
 
 //---------------Define Schema----------
 const eventSchema = Schema({
-    date: {
-        type: String,
-        require: true,
-   
-      },
-      month: {
-        type: String,
-        require: true,
-   
-      },
-    eventName: {
-        type: String,
-        require: true,
-    },
-    eventDetails: {
-        type: String,
-        require: true,
-    },
+  date: {
+    type: String,
+    require: true,
+
+  },
+  month: {
+    type: String,
+    require: true,
+
+  },
+  eventName: {
+    type: String,
+    require: true,
+  },
+  eventDetails: {
+    type: String,
+    require: true,
+  },
 });
 
 

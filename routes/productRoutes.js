@@ -8,15 +8,44 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 let Product = require("../models/Product");
+let Bid = require("../models/Bid");
+let ProductsSold = require("../models/ProductsSold");
 
 //route Get api/products
 //desc Get all Products
 //access public
-router.get("/", authMiddleware, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const products = await Product.find({});
-    res.send(products);
-    res.json({ msg: "Hello Nayanika" });
+    const products = await Product.find({ sold: "false" });
+    const productBids = [];
+    for (const product of products) {
+      let myPromise = new Promise((resolve, reject) => {
+        const bid = Bid.findOne({ productId: product.id }).sort({
+          bid: -1,
+        });
+        resolve(bid);
+      });
+      const bid = await myPromise;
+      flag = false;
+      if (bid != null) {
+        if (
+          Math.floor(Math.abs(new Date() - new Date(bid.date)) / 60000) >= 120
+        ) {
+          flag = true;
+          product.sold = "true";
+          product.save();
+          ProductsSold.create({
+            productId: bid.productId,
+            userId: bid.userId,
+            price: bid.bid,
+          });
+        }
+      }
+      if (!flag) {
+        productBids.push(product);
+      }
+    }
+    res.send(productBids);
   } catch (err) {
     return res.status(500).send("Server error");
   }
@@ -25,7 +54,7 @@ router.get("/", authMiddleware, async (req, res) => {
 //route Get api/product/:id
 //desc Get product by id
 //access public
-router.get("/:id", authMiddleware, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -36,7 +65,6 @@ router.get("/:id", authMiddleware, async (req, res) => {
     return res.status(500).send("Server error");
   }
 });
-
 
 // router.get("/products_by_id", authMiddleware, async (req, res) => {
 //   try {
@@ -62,9 +90,9 @@ router.post(
   [
     check("title", "Title is required").not().isEmpty(),
     check("description", "Description is required").not().isEmpty(),
-    check("price", "Price cannot be 0").notEmpty().isInt({ min: 1 }),
+    check("price", "Price cannot be empty").not().isEmpty({ min: 1 }),
+    check("price", "Price can be float value").isFloat({ decimal_digits: 2 }),
   ],
-  authMiddleware,
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -94,9 +122,9 @@ router.put(
   [
     check("title", "Title is required").not().isEmpty(),
     check("description", "Description is required").not().isEmpty(),
-    check("price", "Price cannot be 0").notEmpty().isInt({ min: 1 }),
+    check("price", "Price cannot be empty").not().isEmpty({ min: 1 }),
+    check("price", "Price can be float value").isFloat({ decimal_digits: 2 }),
   ],
-  authMiddleware,
   async (req, res) => {
     try {
       const errors = validationResult(req);

@@ -48,8 +48,8 @@ router.post(
     check("eventName", "Event Name is required").not().isEmpty(),
     check("eventDetails", "Event Details is required").not().isEmpty(),
 
-   ],
-  
+  ],
+
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -99,9 +99,9 @@ router.put(
     check("month", "month is required").not().isEmpty(),
     check("eventName", "Event Name is required").not().isEmpty(),
     check("eventDetails", "Event Details is required").not().isEmpty(),
-   
+
   ],
- 
+
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -115,11 +115,11 @@ router.put(
       }
 
 
-        (event.date = req.body.date),
-        (event.month= req.body.month),
+      (event.date = req.body.date),
+        (event.month = req.body.month),
         (event.eventName = req.body.eventName),
         (event.eventDetails = req.body.eventDetails),
-         await event.save();
+        await event.save();
       res.send(event);
     } catch (err) {
       return res.status(500).send("Server error");

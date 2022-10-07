@@ -42,6 +42,15 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
 
+app.get("/", (req, res) => {
+  try {
+    res.send("Hello, World!");
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({ error: "SERVER ERROR: " + err.message });
+  }
+});
+
 //-------------Forward to different Routes-------------
 
 app.use("/api/user", userRoute);
@@ -60,7 +69,7 @@ app.use("/api/login", loginRoutes);
 app.use("/api/contact", contactRoute);
 
 //------------Listen server on port from environmental variable-----------------
-const PORT = process.env.PORT | 5000;
+const PORT = process.env.PORT || 5000;
 http.listen(PORT, () => {
   console.log("Server Started");
 });
